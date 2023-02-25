@@ -6,9 +6,9 @@ if(NOT ftxui_FOUND)
   include(FetchContent)
   set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
   FetchContent_Declare(
-    ftxui GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
-    GIT_TAG v4.0.0
-  )
+    ftxui
+    GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+    GIT_TAG v4.0.0)
 
   FetchContent_GetProperties(ftxui)
   if(NOT ftxui_POPULATED)
@@ -22,18 +22,19 @@ if(NOT stb_FOUND)
   include(FetchContent)
   set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
   FetchContent_Declare(
-    stb GIT_REPOSITORY https://github.com/nothings/stb.git
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
     GIT_TAG master
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-  )
+    CONFIGURE_COMMAND "" BUILD_COMMAND "")
 
   FetchContent_GetProperties(stb)
   if(NOT stb_POPULATED)
     FetchContent_Populate(stb)
   endif()
   add_library(stb INTERFACE)
-  set(stb_INCLUDE_DIR ${stb_SOURCE_DIR} CACHE PATH "stb librray")
+  set(stb_INCLUDE_DIR
+      ${stb_SOURCE_DIR}
+      CACHE PATH "stb librray")
   message(STATUS ${stb_SOURCE_DIR})
 endif()
 
@@ -41,10 +42,17 @@ endif()
 add_executable(ImagePreview "ImagePreview.cpp" "ImagePreview.h" "Image.h"
                             "Console.h")
 target_include_directories(ImagePreview PRIVATE ${stb_INCLUDE_DIR})
-target_link_libraries(ImagePreview PRIVATE ftxui::screen ftxui::dom ftxui::component)
+target_link_libraries(ImagePreview PRIVATE ftxui::screen ftxui::dom
+                                           ftxui::component)
 
 if(CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ImagePreview PROPERTY CXX_STANDARD 20)
 endif()
 
+if(NOT WIN32)
+  set_target_properties(ImagePreview PROPERTIES LINK_SEARCH_START_STATIC ON)
+  set_target_properties(ImagePreview PROPERTIES LINK_SEARCH_END_STATIC ON)
+  target_link_options(ImagePreview PRIVATE -static-libgcc -static-libstdc++
+                      -static)
+endif()
 # TODO: Add tests and install targets if needed.

@@ -1,0 +1,155 @@
+﻿{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "vcpkg-config",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "clang-sanitizers",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "-Wall -Wextra -O0",
+                "CMAKE_LINKER_FLAGS": "-Wall -Wextra -O0",
+                "CMAKE_CXX_FLAGS_DEBUG": "-Wall -Wextra -fsanitize=address -fno-omit-frame-pointer -g -O0",
+                "CMAKE_LINKER_FLAGS_DEBUG": "-Wall -Wextra -fsanitize=address -fno-omit-frame-pointer -g -O0"
+            },
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-vc",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "clang",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "windows-vc-x64-debug",
+            "displayName": "Windows VC x64 Debug",
+            "inherits": [
+                "vcpkg-config",
+                "windows-vc"
+            ],
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "windows-vc-x64-release",
+            "displayName": "Windows VC x64 Release",
+            "inherits": "windows-vc-x64-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "windows-clang-x64-debug",
+            "displayName": "Windows Clang x64 Debug",
+            "inherits": [
+                "clang"
+            ],
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-clang-x64-release",
+            "displayName": "Windows Clang x64 Release",
+            "inherits": "windows-clang-x64-debug",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "unix-clang-x64-debug",
+            "displayName": "Unix Clang x64 Debug",
+            "inherits": [
+                "clang",
+                "clang-sanitizers"
+            ],
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "unix-clang-x64-release",
+            "displayName": "Unix Clang x64 Release",
+            "inherits": "unix-clang-x64-debug",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-clang-x64-debug",
+            "configurePreset": "windows-clang-x64-debug"
+        },
+        {
+            "name": "windows-clang-x64-release",
+            "configurePreset": "windows-clang-x64-release"
+        },
+        {
+            "name": "unix-clang-x64-debug",
+            "configurePreset": "unix-clang-x64-debug"
+        },
+        {
+            "name": "unix-clang-x64-release",
+            "configurePreset": "unix-clang-x64-release"
+        }
+    ]
+}
